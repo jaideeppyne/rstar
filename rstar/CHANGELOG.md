@@ -2,6 +2,7 @@
 
 ## Fixed
 - Fixed `bulk_load` building trees whose leaves were not all on the same depth. Depending on the element count this produced a malformed R-tree, which could make a subsequent `insert` panic with "This is a bug in rstar.". `bulk_load` now places all leaves on the same level.
+- Fixed `bulk_load` building nodes with more than `MAX_SIZE` children. Every axis was split into the same number of clusters, giving a node `clusters ^ DIMENSIONS` children: 8 in three dimensions and 64 in six, and in the extreme case reported in [#197](https://github.com/georust/rstar/issues/197) all elements ended up directly under the root. The fan-out is now distributed over the axes instead, so it stays within `MAX_SIZE` in any dimension. Queries on trees of four or more dimensions get substantially faster as a result.
 
 
 # 0.13.0
